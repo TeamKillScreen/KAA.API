@@ -1,12 +1,3 @@
-/**
- * Created by julianmonono on 29/10/2016.
- */
-// server.js
-
-// BASE SETUP
-// =============================================================================
-
-// call the packages we need
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
@@ -97,7 +88,7 @@ router.post('/identity', function(req, res) {
             console.log("response.statusCode: " + response.statusCode)
             console.log("response.statusText: " + response.statusText)
         }
-    });
+      });
 
       res.json({message:"Thanks"})
     } else {
