@@ -2,7 +2,10 @@
   "name": "KAA.API",
   "main": "server.js",
   "dependencies": {
+    "azure-storage": "^1.3.2",
+    "base64-js": "^1.2.0",
+    "body-parser": "~1.0.1",
     "express": "~4.0.0",
-    "body-parser": "~1.0.1"
+    "stream": "0.0.2",
   }
 }

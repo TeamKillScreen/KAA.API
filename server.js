@@ -10,11 +10,30 @@
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
+var busboy = require('connect-busboy');
+var azure = require('azure-storage');
+var base64 = require('base64-js');
+var Stream = require('stream');
+
+var config = null;
+
+try {
+    config = require('./config');
+} catch (ex) {
+    console.log(ex);
+    config = {}
+    config.BlobConnectionString = process.env.AZURE_BLOB_CONNECTION_STRING
+}
+
+console.log(config)
+
+var blobSvc = azure.createBlobService(config.BlobConnectionString);
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(busboy());
 
 var port = process.env.PORT || 8080;        // set our port
 
@@ -32,6 +51,36 @@ router.use(function(req, res, next) {
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
 router.get('/', function(req, res) {
     res.json({ message: 'hooray! welcome to our api!' });
+});
+
+router.post('/identity', function(req, res) {
+
+  var data = base64.toByteArray(req.body.content),
+          buffer = new Buffer(data),
+          stream = new Stream();
+          stream['_ended'] = false;
+          stream['pause'] = function() {
+              stream['_paused'] = true;
+          };
+          stream['resume'] = function() {
+              if(stream['_paused'] && !stream['_ended']) {
+                  stream.emit('data', buffer);
+                  stream['_ended'] = true;
+                  stream.emit('end');
+              }
+          };
+
+  blobSvc.createBlockBlobFromStream('identity', req.body.filename, stream, data.length, function(error, result, response){
+    console.log(result)
+    console.log(error)
+    console.log(response)
+    if(!error){
+      console.log('Uploaded file')
+    }
+  });
+
+  console.dir(req.body)
+  res.json({message:"Thanks"})
 });
 
 // more routes for our API will happen here
