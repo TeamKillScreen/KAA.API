@@ -32,7 +32,6 @@ var blobSvc = azure.createBlobService(config.BlobConnectionString);
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(busboy());
 
 var port = process.env.PORT || 8080;        // set our port
 
