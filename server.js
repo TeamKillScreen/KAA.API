@@ -43,7 +43,7 @@ router.get('/', function(req, res) {
     res.json({ message: 'hooray! welcome to our api!' });
 });
 
-router.post('/identity', function(req, res) {
+router.post('/identify', function(req, res) {
 
   var data = base64.toByteArray(req.body.content),
           buffer = new Buffer(data),
