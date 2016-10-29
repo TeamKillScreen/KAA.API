@@ -13,15 +13,16 @@ var bodyParser = require('body-parser');
 var azure = require('azure-storage');
 var base64 = require('base64-js');
 var Stream = require('stream');
+var request = require("request")
 
 var config = null;
 
 try {
     config = require('./config');
 } catch (ex) {
-    console.log(ex);
     config = {}
     config.BlobConnectionString = process.env.AZURE_BLOB_CONNECTION_STRING
+    config.FunctionAPINewFile = process.env.FUNCTION_API_NEW_FILE
 }
 
 console.log(config)
@@ -68,17 +69,41 @@ router.post('/identity', function(req, res) {
               }
           };
 
-  blobSvc.createBlockBlobFromStream('identity', req.body.filename, stream, data.length, function(error, result, response){
+  var filename = req.body.filename.toLowerCase();
+
+  blobSvc.createBlockBlobFromStream('identity', filename, stream, data.length, function(error, result, response){
     console.log(result)
     console.log(error)
     console.log(response)
     if(!error){
       console.log('Uploaded file')
+
+      var requestData = { "FilePath": "identity/" + filename};
+
+      request({
+        url: config.FunctionAPINewFile,
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+        },
+        json: requestData
+      },function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            console.log(body)
+        }
+        else {
+
+            console.log("error: " + error)
+            console.log("response.statusCode: " + response.statusCode)
+            console.log("response.statusText: " + response.statusText)
+        }
+    });
+
+      res.json({message:"Thanks"})
+    } else {
+      res.code = 500;
     }
   });
-
-  console.dir(req.body)
-  res.json({message:"Thanks"})
 });
 
 // more routes for our API will happen here
