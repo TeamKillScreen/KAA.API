@@ -22,6 +22,7 @@ var blobSvc = azure.createBlobService(config.BlobConnectionString);
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
+app.use(express.bodyParser({limit: '50mb'}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
