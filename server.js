@@ -81,6 +81,7 @@ router.post('/identify', function(req, res) {
       },function (error, response, body) {
         if (!error && response.statusCode === 200) {
             console.log(body)
+          res.json({body})
         }
         else {
 
@@ -90,7 +91,64 @@ router.post('/identify', function(req, res) {
         }
       });
 
-      res.json({message:"Thanks"})
+
+    } else {
+      res.code = 500;
+    }
+  });
+});
+
+
+
+router.post('/addmugshot', function(req, res) {
+
+  var data = base64.toByteArray(req.body.content),
+    buffer = new Buffer(data),
+    stream = new Stream();
+  stream['_ended'] = false;
+  stream['pause'] = function() {
+    stream['_paused'] = true;
+  };
+  stream['resume'] = function() {
+    if(stream['_paused'] && !stream['_ended']) {
+      stream.emit('data', buffer);
+      stream['_ended'] = true;
+      stream.emit('end');
+    }
+  };
+
+  var filename = req.body.filename.toLowerCase();
+
+  blobSvc.createBlockBlobFromStream('missingpersons', filename, stream, data.length, function(error, result, response){
+    console.log(result)
+    console.log(error)
+    console.log(response)
+    if(!error){
+      console.log('Uploaded file')
+
+      var requestData = { "FilePath": "missingpersons/" + filename};
+
+      request({
+        url: config.FunctionAPINewMissingPerson,
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        json: requestData
+      },function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+          console.log(body)
+          res.json({body})
+        }
+        else {
+
+          console.log("error: " + error)
+          console.log("response.statusCode: " + response.statusCode)
+          console.log("response.statusText: " + response.statusText)
+        }
+      });
+
+
     } else {
       res.code = 500;
     }
