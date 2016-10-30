@@ -188,18 +188,33 @@ router.post('/addmugshot', function(req, res) {
       res.code = 500;
     }
   });
-
-
 });
+
+
+router.post('/relatemugshot', function(req, res) {
+  var filename = req.body.filename.toLowerCase();
+  var personId = req.body.personId;
+  var persistantface = req.body.persistantface;
+
+  session
+    .run("MERGE (ms:Mugshot {persistantface : {persistantface}} ), MATCH (mp:MissingPerson { Unique_ID : {personId} }), MATCH (p:Photo {FilePath : {FilePath}} ) MERGE (ms)-[:MUGSHOTOF]->(mp) MERGE (p)-[:IMAGEOF]->(ms)  RETURN ms ", { persistantface : persistantface, personId : personId})
+    .then(function(result){
+      result.records.forEach(function(record) {
+        console.log(record._fields);
+      });
+      // Completed!
+      session.close();
+      res.json({"OMG" : "It worked!"})
+    })
+    .catch(function(error) {
+      console.log(error);
+      res.code = 500;
+    });
+})
 
 // more routes for our API will happen here
 router.route('/')
 
-router.post('/addmugshot', function(req, res) {
-  var filename = req.body.filename.toLowerCase();
-  var personId = req.body.personId;
-  var persistantface = req.body.persistantface;
-})
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
