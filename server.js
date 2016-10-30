@@ -198,6 +198,9 @@ router.put('/relatemugshot', function(req, res) {
   var personId = req.body.personId;
   var persistantface = req.body.persistedFaceId;
 
+  if (!filepath || !personId || !persistantface) {
+    console.log("One of our paramiters is missing!")
+  }
   session
     .run("MERGE (ms:Mugshot {persistantface : {persistantface}} )", { persistantface : persistantface})
     .then(function(result){
