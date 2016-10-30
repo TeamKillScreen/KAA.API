@@ -65,8 +65,8 @@ router.post('/identify', function(req, res) {
           };
 
   var filename = req.body.filename.toLowerCase();
-  var lat = req.body.lat;
-  var long = req.body.long;
+  var lat = req.body.lat || 0;
+  var long = req.body.long || 0;
 
   blobSvc.createBlockBlobFromStream('identity', filename, stream, data.length, function(error, result, response){
     console.log(result)
