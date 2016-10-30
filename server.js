@@ -72,7 +72,21 @@ router.post('/identify', function(req, res) {
     if(!error){
       console.log('Uploaded file')
 
-      var requestData = { "FilePath": "identity/" + filename};
+      var filePath = "identity/" + filename
+      session
+        .run("MERGE (p:Photo {FilePath : {FilePath}} ) RETURN p ", { FilePath : filePath})
+        .then(function(result){
+          result.records.forEach(function(record) {
+            console.log(record._fields);
+          });
+          // Completed!
+          session.close();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+
+      var requestData = { "FilePath": filePath};
 
       request({
         url: config.FunctionAPINewFile,
