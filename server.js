@@ -261,7 +261,22 @@ router.get('/mugshotofperson/:id', function(req,res) {
     res.send('Query Id not defined')
     console.log('Query Id not defined')
   }
-
+  var Unique_ID = req.params.id
+  session
+    .run("MATCH (mp:MissingPerson{Unique_ID : {unique_ID}})-[:MUGSHOTOF]-(:Mugshot)-[PHOTOOF]-(Photo:Photo) RETURN Photo LIMIT 1",{unique_ID: Unique_ID})
+    .then(function(result){
+      console.log('What')
+      result.records.forEach(function(record) {
+        console.log(record._fields);
+      });
+      session.close();
+      //res.json({ mugshot_url: 'https://storagekeepingupappear.blob.core.windows.net/' + JSON.stringify(result.records[0]) })
+    })
+    .catch(function(error) {
+      res.code = 500;
+      res.json({"oh" : "FFS!"})
+      console.log(error);
+    });
   retval = { mugshot_url: 'https://storagekeepingupappear.blob.core.windows.net/missingpersons/richard.jpg'}
 
   res.send(retval);
