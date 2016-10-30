@@ -18,8 +18,12 @@ try {
     config = {}
     config.BlobConnectionString = process.env.AZURE_BLOB_CONNECTION_STRING
     config.FunctionAPINewFile = process.env.FUNCTION_API_NEW_FILE
-  config.FunctionAPINewMissingPerson = process.env.FUNCTION_API_NEW_MISSING_PERSON
+    config.FunctionAPINewMissingPerson = process.env.FUNCTION_API_NEW_MISSING_PERSON
+    config.ClockworkSMSKey = process.env.CLOCKWORK_SMS_KEY
+    config.ClockworkToNumber = process.env.CLOCKWORK_TO_NUMBER
 }
+
+var clockwork = require('clockwork')({key:config.ClockworkSMSKey});
 
 console.log(config)
 
@@ -403,6 +407,14 @@ router.put('/relatefacetomugshot', function(req, res) {
         console.log(record._fields);
       });
       session.close();
+      clockwork.sendSms({ To: config.ClockworkToNumber, Content: 'Face Linked!'},
+        function(error, resp) {
+          if (error) {
+              console.log('Something went wrong', error);
+          } else {
+              console.log('Message sent',resp.responses[0].id);
+          }
+      });
       res.json({"OMG" : "It worked!"})
     })
     .catch(function(error) {
