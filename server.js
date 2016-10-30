@@ -198,12 +198,12 @@ router.put('/relatemugshot', function(req, res) {
 
   session
     .run("MERGE (ms:Mugshot {persistantface : {persistantface}} )", { persistantface : persistantface})
-    .then(function(result, persistantface){
+    .then(function(result){
       result.records.forEach(function(record) {
         console.log(record._fields);
       });
       session
-        .run("MATCH (ms:Mugshot {persistantface : {persistantface}} ), (mp:MissingPerson { Unique_ID : {personId} }), (p:Photo {FilePath : {filepath}} )  CREATE (ms)-[:MUGSHOTOF]->(mp), (p)-[:PHOTOOF]->(ms)  RETURN ms", { persistantface : persistantface, personId : personId, filepath : filepath})
+        .run("MATCH (ms:Mugshot {persistantface : {persistantfacep}} ), (mp:MissingPerson { Unique_ID : {personId} }), (p:Photo {FilePath : {filepath}} )  CREATE (ms)-[:MUGSHOTOF]->(mp), (p)-[:PHOTOOF]->(ms)  RETURN ms", { persistantfacep : persistantface, personId : personId, filepath : filepath})
         .then(function(result){
           result.records.forEach(function(record) {
             console.log(record._fields);
