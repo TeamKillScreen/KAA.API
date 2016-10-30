@@ -178,8 +178,8 @@ router.post('/addmugshot', function(req, res) {
         else {
 
           console.log("error: " + error)
-          console.log("response.statusCode: " + response.statusCode)
-          console.log("response.statusText: " + response.statusText)
+          res.code = 500;
+          res.send(error)
         }
       });
 
