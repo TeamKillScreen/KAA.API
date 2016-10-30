@@ -234,11 +234,11 @@ router.put('/relatemugshot', function(req, res) {
 router.put('/relatefacetomugshot', function(req, res) {
   var persistantface = req.body.persistedFaceId;
   var filepath = req.body.filePath;
-  var confidence = req.body.confidence;
+  var convidence = req.body.confidence;
   var faceId = req.body.faceId;
   var faceRectangle = req.body.faceRectangle;
 
- 
+
   session
     .run("MATCH (ms:Mugshot {persistantface : {Persistantface}} ), (p:Photo {FilePath : {Filepath}} )  create (f:Face {faceId : {FaceId}, faceRectangle : {FaceRectangle}})-[:ISIN]->(p), (fm:FaceMatch {convidence: {Convidence}})-[:CONFIDENCEOFBEING]->(ms), (fm)-[:OF]->(f)",
       { FaceId : faceId, FaceRectangle : faceRectangle, Convidence : convidence, Persistantface : persistantface, Filepath :  filepath})
