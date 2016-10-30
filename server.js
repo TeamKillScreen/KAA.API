@@ -255,6 +255,32 @@ router.get('/missingpersons', function(req,res) {
    });
 });
 
+router.get('/missingpersons/:id', function(req,res) {
+  if(typeof req.params.id === 'undefined') {
+    res.code = 400;
+    res.send('Query Id not defined')
+    console.log('Query Id not defined')
+  }
+
+  var Unique_ID = req.params.id
+
+  session
+   .run("MATCH (n:MissingPerson{Unique_ID : {unique_ID}}) RETURN n",{unique_ID: Unique_ID})
+   .then(function(result){
+     var output = []
+
+     var person = result.records[0]._fields[0].properties;
+
+     session.close();
+     res.json(person)
+   })
+   .catch(function(error) {
+     res.code = 500;
+     res.json({"oh" : "FFS!"})
+     console.log(error);
+   });
+});
+
 router.get('/mugshotofperson/:id', function(req,res) {
   if(typeof req.params.id === 'undefined') {
     res.code = 400;
