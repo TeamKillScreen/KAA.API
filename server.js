@@ -5,6 +5,9 @@ var azure = require('azure-storage');
 var base64 = require('base64-js');
 var Stream = require('stream');
 var request = require("request")
+var neo4j = require('neo4j-driver').v1;
+var driver = neo4j.driver("bolt://52.169.73.89", neo4j.auth.basic("neo4j", "neo4jneo4j"));
+var session = driver.session();
 
 var config = null;
 
@@ -118,6 +121,7 @@ router.post('/addmugshot', function(req, res) {
   };
 
   var filename = req.body.filename.toLowerCase();
+  var personId = req.body.personId;
 
   blobSvc.createBlockBlobFromStream('missingpersons', filename, stream, data.length, function(error, result, response){
     console.log(result)
@@ -126,7 +130,24 @@ router.post('/addmugshot', function(req, res) {
     if(!error){
       console.log('Uploaded file')
 
-      var requestData = { "FilePath": "missingpersons/" + filename};
+      var filePath = "missingpersons/" + filename
+      session
+        .run("MERGE (p:Photo {FilePath : {FilePath}} ) RETURN p ", { FilePath : filePath})
+        .then(function(result){
+          result.records.forEach(function(record) {
+            console.log(record._fields);
+          });
+          // Completed!
+          session.close();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+
+      var requestData = {
+        "FilePath": filePath,
+        "personId" : personId
+      };
 
       request({
         url: config.FunctionAPINewMissingPerson,
@@ -153,11 +174,18 @@ router.post('/addmugshot', function(req, res) {
       res.code = 500;
     }
   });
+
+
 });
 
 // more routes for our API will happen here
 router.route('/')
 
+router.post('/addmugshot', function(req, res) {
+  var filename = req.body.filename.toLowerCase();
+  var personId = req.body.personId;
+  var persistantface = req.body.persistantface;
+})
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
