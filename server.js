@@ -233,6 +233,26 @@ router.put('/relatemugshot', function(req, res) {
     });
 })
 
+router.get('/missingpersons', function(req,res) {
+  session
+   .run("MATCH (n:MissingPerson) RETURN n",{})
+   .then(function(result){
+     var output = []
+
+     result.records.forEach(function(record) {
+       output.push(record._fields[0].properties);
+     });
+
+     session.close();
+     res.json({"missingpersons" : output})
+   })
+   .catch(function(error) {
+     res.code = 500;
+     res.json({"oh" : "FFS!"})
+     console.log(error);
+   });
+});
+
 router.get('/mugshotofperson/:id', function(req,res) {
   if(typeof req.params.id === 'undefined') {
     res.code = 400;
