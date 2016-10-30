@@ -312,14 +312,38 @@ router.get('/matchingphotosofperson/:id', function(req,res) {
     console.log('Query Id not defined')
   }
 
+  var Unique_ID = req.params.id;
+
   session
-    .run("MATCH (mp:MissingPerson{Unique_ID : {unique_ID}})-[:MUGSHOTOF]-(:Mugshot)-[CONFIDENCEOFBEING]-(:FaceMatch)-[OF]-(face:Face)-[ISIN]-(photo:Photo) RETURN face,photo",{unique_ID, Unique_ID})
+    .run("MATCH (mp:MissingPerson{Unique_ID : {unique_ID}})-[:MUGSHOTOF]-(:Mugshot)-[CONFIDENCEOFBEING]-(:FaceMatch)-[OF]-(face:Face)-[ISIN]-(photo:Photo) RETURN face,photo",{unique_ID: Unique_ID})
     .then(function(result){
+      var retval = { photos: []}
+
       result.records.forEach(function(record) {
         console.log(record._fields);
+
+        var photo = {
+          photo_url: 'https://storagekeepingupappear.blob.core.windows.net/' + record._fields[1].properties.FilePath,
+          location: {
+            lat: record._fields[1].properties.Lat,
+            long: record._fields[1].properties.Long
+          },
+          source: "Twitter",
+          face: {
+            top: record._fields[0].properties.faceRectangletop,
+            left: record._fields[0].properties.faceRectangleleft,
+            height: record._fields[0].properties.faceRectangleheight,
+            width: record._fields[0].properties.faceRectanglewidth,
+          }
+        }
+
+        retval.photos.push(photo);
       });
       session.close();
-      res.json({"OMG" : "It worked!"})
+
+
+
+      res.json(retval)
     })
     .catch(function(error) {
       res.code = 500;
@@ -338,8 +362,6 @@ router.get('/matchingphotosofperson/:id', function(req,res) {
         location: {lat: 53.476802, long: -2.254879},
         source: "Twitter"
       }] };
-
-  res.send(retval);
 
 })
 
