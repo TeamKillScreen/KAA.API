@@ -259,7 +259,7 @@ router.put('/relatefacetomugshot', function(req, res) {
     .catch(function(error) {
       console.log(error);
       res.code = 500;
-      res.send(error)
+      res.json({"oh" : "FFS!"})
     });
 })
 
