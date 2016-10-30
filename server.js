@@ -415,10 +415,7 @@ router.put('/relatefacetomugshot', function(req, res) {
         FaceRectangleheight : faceRectangle.height,
         Convidence : convidence,
         Persistantface : persistantface,
-        Filepath :  filepath,
-        Gender :  gender,
-        Age :  age}
-    )
+        Filepath :  filepath})
     .then(function(result){
       result.records.forEach(function(record) {
         console.log(record._fields);
