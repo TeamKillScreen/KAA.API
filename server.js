@@ -229,6 +229,35 @@ router.put('/relatemugshot', function(req, res) {
     });
 })
 
+
+
+router.put('/relatefacetomugshot', function(req, res) {
+  var persistantface = req.body.persistedFaceId;
+  var filepath = req.body.filePath;
+  var confidence = req.body.confidence;
+  var faceId = req.body.faceId;
+  var faceRectangle = req.body.faceRectangle;
+
+  if (!filepath || !personId || !persistantface) {
+    console.log("One of our paramiters is missing!")
+  }
+  session
+    .run("MATCH (ms:Mugshot {persistantface : {Persistantface}} ), (p:Photo {FilePath : {Filepath}} )  create (f:Face {faceId : {FaceId}, faceRectangle : {FaceRectangle}})-[:ISIN]->(p), (fm:FaceMatch {convidence: {Convidence}})-[:CONFIDENCEOFBEING]->(ms), (fm)-[:OF]->(f)",
+      { FaceId : faceId, FaceRectangle : faceRectangle, Convidence : convidence, Persistantface : persistantface, Filepath :  filepath})
+    .then(function(result){
+      result.records.forEach(function(record) {
+        console.log(record._fields);
+      });
+      session.close();
+      res.json({"OMG" : "It worked!"})
+    })
+    .catch(function(error) {
+      console.log(error);
+      res.code = 500;
+      res.send(error)
+    });
+})
+
 // more routes for our API will happen here
 router.route('/')
 
