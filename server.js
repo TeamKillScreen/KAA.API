@@ -194,13 +194,17 @@ router.post('/addmugshot', function(req, res) {
 
 
 router.put('/relatemugshot', function(req, res) {
+  if (typeof req.body.filePath === 'undefined'
+    || typeof req.body.personId === 'undefined'
+    || typeof req.body.persistedFaceId === 'undefined') {
+    res.code = 500;
+    res.send('One of our paramittters is missing')
+    console.log('One of our paramittters is missing')
+  }
   var filepath = req.body.filePath;
   var personId = req.body.personId;
   var persistantface = req.body.persistedFaceId;
 
-  if (!filepath || !personId || !persistantface) {
-    console.log("One of our paramiters is missing!")
-  }
   session
     .run("MERGE (ms:Mugshot {persistantface : {persistantface}} )", { persistantface : persistantface})
     .then(function(result){
@@ -257,9 +261,9 @@ router.put('/relatefacetomugshot', function(req, res) {
       res.json({"OMG" : "It worked!"})
     })
     .catch(function(error) {
-      console.log(error);
       res.code = 500;
       res.json({"oh" : "FFS!"})
+      console.log(error);
     });
 })
 
