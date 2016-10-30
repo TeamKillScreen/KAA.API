@@ -233,6 +233,19 @@ router.put('/relatemugshot', function(req, res) {
     });
 })
 
+router.get('/mugshotofperson/:id', function(req,res) {
+  if(typeof req.params.id === 'undefined') {
+    res.code = 400;
+    res.send('Query Id not defined')
+    console.log('Query Id not defined')
+  }
+
+  retval = { mugshot_url: 'https://storagekeepingupappear.blob.core.windows.net/missingpersons/richard.jpg'}
+
+  res.send(retval);
+
+})
+
 
 
 router.put('/relatefacetomugshot', function(req, res) {
