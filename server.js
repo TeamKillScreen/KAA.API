@@ -187,13 +187,14 @@ router.post('/addmugshot', function(req, res) {
 
     } else {
       res.code = 500;
+      res.send(error)
     }
   });
 });
 
 
 router.put('/relatemugshot', function(req, res) {
-  var filepath = req.body.filePath.toLowerCase();
+  var filepath = req.body.filePath;
   var personId = req.body.personId;
   var persistantface = req.body.persistedFaceId;
 
