@@ -336,7 +336,8 @@ router.get('/matchingphotosofperson/:id', function(req,res) {
             left: record._fields[0].properties.faceRectangleleft,
             height: record._fields[0].properties.faceRectangleheight,
             width: record._fields[0].properties.faceRectanglewidth,
-          }
+          },
+          datestamp: record._fields[0].properties.faceRectangletop || moment().format()
         }
 
         retval.photos.push(photo);
