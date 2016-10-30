@@ -236,6 +236,16 @@ router.put('/relatemugshot', function(req, res) {
 
 
 router.put('/relatefacetomugshot', function(req, res) {
+  if (typeof req.body.persistedFaceId === 'undefined'
+    || req.body.filePath === 'undefined'
+    || typeof req.body.confidence === 'undefined'
+    || typeof req.body.faceId === 'undefined'
+    || typeof req.body.faceRectangle === 'undefined'
+  ) {
+    res.code = 500;
+    res.send('One of our paramittters is missing')
+    console.log('One of our paramittters is missing')
+  }
   var persistantface = req.body.persistedFaceId;
   var filepath = req.body.filePath;
   var convidence = req.body.confidence;
