@@ -393,16 +393,19 @@ router.put('/relatefacetomugshot', function(req, res) {
   var faceId = req.body.faceId;
   var faceRectangle = req.body.faceRectangle;
   console.log(req.body)
-  var age = req.body.faceAttributes.age || 0;
-  var gender = req.body.faceAttributes.gender || "";
-  if (gender == "male") {
-    gender = "M"
-  } else if (gender == "female") {
-    gender = "F"
-  } else {
-    gender = ""
+  var age = 0
+  var gender = ''
+  if (typeof req.body.faceAttributes !== 'undefined') {
+    age = req.body.faceAttributes.age || 0;
+    gender = req.body.faceAttributes.gender || "";
+    if (gender == "male") {
+      gender = "M"
+    } else if (gender == "female") {
+      gender = "F"
+    } else {
+      gender = ""
+    }
   }
-
   session
     .run("MATCH (ms:Mugshot {persistantface : {Persistantface}} ), (p:Photo {FilePath : {Filepath}} )  create (f:Face {faceId : {FaceId}, faceRectangletop : {FaceRectangletop}, faceRectangleleft : {FaceRectangleleft}, faceRectanglewidth : {FaceRectanglewidth}, faceRectangleheight : {FaceRectangleheight, gender : {Gender}, age : {age} } })-[:ISIN]->(p), (fm:FaceMatch {convidence: {Convidence}})-[:CONFIDENCEOFBEING]->(ms), (fm)-[:OF]->(f)",
       { FaceId : faceId,
