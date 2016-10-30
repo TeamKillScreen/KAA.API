@@ -67,6 +67,7 @@ router.post('/identify', function(req, res) {
   var filename = req.body.filename.toLowerCase();
   var lat = req.body.lat || 0;
   var long = req.body.long || 0;
+  var timeStamp = req.body.timestamp || new Date();
 
   blobSvc.createBlockBlobFromStream('identity', filename, stream, data.length, function(error, result, response){
     console.log(result)
@@ -77,7 +78,7 @@ router.post('/identify', function(req, res) {
 
       var filePath = "identity/" + filename
       session
-        .run("MERGE (p:Photo {FilePath : {FilePath}, Lat: {Lat}, Long: {Long}} ) RETURN p ", { FilePath : filePath, Lat: lat, Long: long})
+        .run("MERGE (p:Photo {FilePath : {FilePath}, Lat: {Lat}, Long: {Long}, Timestamp: {timestamp} } ) RETURN p ", { FilePath : filePath, Lat: lat, Long: long, timestamp: timeStamp})
         .then(function(result){
           result.records.forEach(function(record) {
             console.log(record._fields);
