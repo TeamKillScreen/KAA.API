@@ -392,6 +392,7 @@ router.put('/relatefacetomugshot', function(req, res) {
   var convidence = req.body.confidence;
   var faceId = req.body.faceId;
   var faceRectangle = req.body.faceRectangle;
+  console.log(req.body)
   var age = req.body.faceAttributes.age || 0;
   var gender = req.body.faceAttributes.gender || "";
   if (gender == "male") {
