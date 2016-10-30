@@ -6,6 +6,7 @@
     "base64-js": "^1.2.0",
     "body-parser": "~1.0.1",
     "express": "~4.0.0",
+    "moment": "^2.15.2",
     "neo4j-driver": "^1.1.0-M02",
     "request": "^2.76.0",
     "stream": "0.0.2"

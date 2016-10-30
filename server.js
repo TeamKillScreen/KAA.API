@@ -8,6 +8,7 @@ var request = require("request")
 var neo4j = require('neo4j-driver').v1;
 var driver = neo4j.driver("bolt://52.169.73.89", neo4j.auth.basic("neo4j", "neo4jneo4j"));
 var session = driver.session();
+var moment = require('moment');
 
 var config = null;
 
@@ -67,7 +68,7 @@ router.post('/identify', function(req, res) {
   var filename = req.body.filename.toLowerCase();
   var lat = req.body.lat || 0;
   var long = req.body.long || 0;
-  var timeStamp = req.body.timestamp || new Date();
+  var timeStamp = req.body.timestamp || moment().format();;
 
   blobSvc.createBlockBlobFromStream('identity', filename, stream, data.length, function(error, result, response){
     console.log(result)
