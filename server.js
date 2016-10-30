@@ -341,7 +341,7 @@ router.get('/matchingphotosofperson/:id', function(req,res) {
             height: record._fields[0].properties.faceRectangleheight,
             width: record._fields[0].properties.faceRectanglewidth,
           },
-          datestamp: record._fields[0].properties.faceRectangletop || moment().format()
+          datestamp: record._fields[0].properties.Timestamp || moment().format()
         }
 
         retval.photos.push(photo);
@@ -390,7 +390,15 @@ router.put('/relatefacetomugshot', function(req, res) {
   var convidence = req.body.confidence;
   var faceId = req.body.faceId;
   var faceRectangle = req.body.faceRectangle;
-
+  var age = req.body.faceAttributes.age || 0;
+  var gender = req.body.faceAttributes.age || "";
+  if (gender == "male") {
+    gender = "M"
+  } else if (gender == "female") {
+    gender = "F"
+  } else {
+    gender = ""
+  }
 
   session
     .run("MATCH (ms:Mugshot {persistantface : {Persistantface}} ), (p:Photo {FilePath : {Filepath}} )  create (f:Face {faceId : {FaceId}, faceRectangletop : {FaceRectangletop}, faceRectangleleft : {FaceRectangleleft}, faceRectanglewidth : {FaceRectanglewidth}, faceRectangleheight : {FaceRectangleheight} })-[:ISIN]->(p), (fm:FaceMatch {convidence: {Convidence}})-[:CONFIDENCEOFBEING]->(ms), (fm)-[:OF]->(f)",
