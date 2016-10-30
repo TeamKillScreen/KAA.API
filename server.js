@@ -313,7 +313,7 @@ router.get('/matchingphotosofperson/:id', function(req,res) {
   }
 
   session
-    .run("MATCH (mp:MissingPerson{Unique_ID : {unique_ID}})-[:MUGSHOTOF]-(:Mugshot)-[CONFIDENCEOFBEING]-(:FaceMatch)-[OF]-(:Face)-[ISIN]-(Photo:Photo) RETURN Photo",{unique_ID, Unique_ID})
+    .run("MATCH (mp:MissingPerson{Unique_ID : {unique_ID}})-[:MUGSHOTOF]-(:Mugshot)-[CONFIDENCEOFBEING]-(:FaceMatch)-[OF]-(face:Face)-[ISIN]-(photo:Photo) RETURN face,photo",{unique_ID, Unique_ID})
     .then(function(result){
       result.records.forEach(function(record) {
         console.log(record._fields);
