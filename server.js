@@ -246,6 +246,29 @@ router.get('/mugshotofperson/:id', function(req,res) {
 
 })
 
+router.get('/matchingphotosofperson/:id', function(req,res) {
+  if(typeof req.params.id === 'undefined') {
+    res.code = 400;
+    res.send('Query Id not defined')
+    console.log('Query Id not defined')
+  }
+
+  retval = { photos: [{
+        photo_url: 'https://storagekeepingupappear.blob.core.windows.net/identity/0348256610fd59c61c5dbf7fa679e036.jpg',
+        face: {top: 0, left:0, height:10, width:10},
+        location: {lat: 53.476802, long: -2.254879},
+        source: "Twitter"
+      }, {
+        photo_url: 'https://storagekeepingupappear.blob.core.windows.net/identity/048f1e1b8454e38e9421fdb833d68f52.jpg',
+        face: {top: 20, left:10, height:20, width:20},
+        location: {lat: 53.476802, long: -2.254879},
+        source: "Twitter"
+      }] };
+
+  res.send(retval);
+
+})
+
 
 
 router.put('/relatefacetomugshot', function(req, res) {
