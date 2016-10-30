@@ -265,22 +265,18 @@ router.get('/mugshotofperson/:id', function(req,res) {
   session
     .run("MATCH (mp:MissingPerson{Unique_ID : {unique_ID}})-[:MUGSHOTOF]-(:Mugshot)-[PHOTOOF]-(Photo:Photo) RETURN Photo LIMIT 1",{unique_ID: Unique_ID})
     .then(function(result){
-      console.log('What')
-      result.records.forEach(function(record) {
-        console.log(record._fields);
-      });
+      var path = result.records[0]._fields[0].properties.FilePath;
       session.close();
-      //res.json({ mugshot_url: 'https://storagekeepingupappear.blob.core.windows.net/' + JSON.stringify(result.records[0]) })
+
+      retval = { mugshot_url: 'https://storagekeepingupappear.blob.core.windows.net/' + path }
+
+      res.send(retval);
     })
     .catch(function(error) {
       res.code = 500;
       res.json({"oh" : "FFS!"})
       console.log(error);
     });
-  retval = { mugshot_url: 'https://storagekeepingupappear.blob.core.windows.net/missingpersons/richard.jpg'}
-
-  res.send(retval);
-
 })
 
 router.get('/matchingphotosofperson/:id', function(req,res) {
