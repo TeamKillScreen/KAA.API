@@ -391,7 +391,7 @@ router.put('/relatefacetomugshot', function(req, res) {
   var faceId = req.body.faceId;
   var faceRectangle = req.body.faceRectangle;
   var age = req.body.faceAttributes.age || 0;
-  var gender = req.body.faceAttributes.age || "";
+  var gender = req.body.faceAttributes.gender || "";
   if (gender == "male") {
     gender = "M"
   } else if (gender == "female") {
@@ -401,7 +401,7 @@ router.put('/relatefacetomugshot', function(req, res) {
   }
 
   session
-    .run("MATCH (ms:Mugshot {persistantface : {Persistantface}} ), (p:Photo {FilePath : {Filepath}} )  create (f:Face {faceId : {FaceId}, faceRectangletop : {FaceRectangletop}, faceRectangleleft : {FaceRectangleleft}, faceRectanglewidth : {FaceRectanglewidth}, faceRectangleheight : {FaceRectangleheight} })-[:ISIN]->(p), (fm:FaceMatch {convidence: {Convidence}})-[:CONFIDENCEOFBEING]->(ms), (fm)-[:OF]->(f)",
+    .run("MATCH (ms:Mugshot {persistantface : {Persistantface}} ), (p:Photo {FilePath : {Filepath}} )  create (f:Face {faceId : {FaceId}, faceRectangletop : {FaceRectangletop}, faceRectangleleft : {FaceRectangleleft}, faceRectanglewidth : {FaceRectanglewidth}, faceRectangleheight : {FaceRectangleheight ,gender : {Gender}, age : {age} } })-[:ISIN]->(p), (fm:FaceMatch {convidence: {Convidence}})-[:CONFIDENCEOFBEING]->(ms), (fm)-[:OF]->(f)",
       { FaceId : faceId,
         FaceRectangletop : faceRectangle.top,
         FaceRectangleleft : faceRectangle.left,
@@ -409,7 +409,10 @@ router.put('/relatefacetomugshot', function(req, res) {
         FaceRectangleheight : faceRectangle.height,
         Convidence : convidence,
         Persistantface : persistantface,
-        Filepath :  filepath})
+        Filepath :  filepath,
+        Gender :  gender,
+        Age :  age}
+    )
     .then(function(result){
       result.records.forEach(function(record) {
         console.log(record._fields);
