@@ -164,7 +164,7 @@ router.post('/addmugshot', function(req, res) {
       };
 
       request({
-        url: config.FunctionAPINewMissingPerson,
+        uri: config.FunctionAPINewMissingPerson,
         method: "POST",
         headers: {
           "content-type": "application/json",
