@@ -17,6 +17,7 @@ try {
     config = {}
     config.BlobConnectionString = process.env.AZURE_BLOB_CONNECTION_STRING
     config.FunctionAPINewFile = process.env.FUNCTION_API_NEW_FILE
+  config.FunctionAPINewMissingPerson = process.env.FUNCTION_API_NEW_MISSING_PERSON
 }
 
 console.log(config)
@@ -164,7 +165,7 @@ router.post('/addmugshot', function(req, res) {
       };
 
       request({
-        uri: config.FunctionAPINewMissingPerson,
+        url: config.FunctionAPINewMissingPerson,
         method: "POST",
         headers: {
           "content-type": "application/json",
