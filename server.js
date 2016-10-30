@@ -341,7 +341,9 @@ router.get('/matchingphotosofperson/:id', function(req,res) {
             height: record._fields[0].properties.faceRectangleheight,
             width: record._fields[0].properties.faceRectanglewidth,
           },
-          datestamp: record._fields[0].properties.Timestamp || moment().format()
+          datestamp: record._fields[0].properties.Timestamp || moment().format(),
+          age: record._fields[0].properties.age,
+          gender: record._fields[0].properties.gender,
         }
 
         retval.photos.push(photo);
@@ -401,7 +403,7 @@ router.put('/relatefacetomugshot', function(req, res) {
   }
 
   session
-    .run("MATCH (ms:Mugshot {persistantface : {Persistantface}} ), (p:Photo {FilePath : {Filepath}} )  create (f:Face {faceId : {FaceId}, faceRectangletop : {FaceRectangletop}, faceRectangleleft : {FaceRectangleleft}, faceRectanglewidth : {FaceRectanglewidth}, faceRectangleheight : {FaceRectangleheight ,gender : {Gender}, age : {age} } })-[:ISIN]->(p), (fm:FaceMatch {convidence: {Convidence}})-[:CONFIDENCEOFBEING]->(ms), (fm)-[:OF]->(f)",
+    .run("MATCH (ms:Mugshot {persistantface : {Persistantface}} ), (p:Photo {FilePath : {Filepath}} )  create (f:Face {faceId : {FaceId}, faceRectangletop : {FaceRectangletop}, faceRectangleleft : {FaceRectangleleft}, faceRectanglewidth : {FaceRectanglewidth}, faceRectangleheight : {FaceRectangleheight, gender : {Gender}, age : {age} } })-[:ISIN]->(p), (fm:FaceMatch {convidence: {Convidence}})-[:CONFIDENCEOFBEING]->(ms), (fm)-[:OF]->(f)",
       { FaceId : faceId,
         FaceRectangletop : faceRectangle.top,
         FaceRectangleleft : faceRectangle.left,
