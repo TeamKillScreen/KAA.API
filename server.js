@@ -240,8 +240,15 @@ router.put('/relatefacetomugshot', function(req, res) {
 
 
   session
-    .run("MATCH (ms:Mugshot {persistantface : {Persistantface}} ), (p:Photo {FilePath : {Filepath}} )  create (f:Face {faceId : {FaceId}, faceRectangle : {FaceRectangle}})-[:ISIN]->(p), (fm:FaceMatch {convidence: {Convidence}})-[:CONFIDENCEOFBEING]->(ms), (fm)-[:OF]->(f)",
-      { FaceId : faceId, FaceRectangle : faceRectangle, Convidence : convidence, Persistantface : persistantface, Filepath :  filepath})
+    .run("MATCH (ms:Mugshot {persistantface : {Persistantface}} ), (p:Photo {FilePath : {Filepath}} )  create (f:Face {faceId : {FaceId}, faceRectangletop : {FaceRectangletop}, faceRectangleleft : {FaceRectangleleft}, faceRectanglewidth : {FaceRectanglewidth}, faceRectangleheight : {FaceRectangleheight} })-[:ISIN]->(p), (fm:FaceMatch {convidence: {Convidence}})-[:CONFIDENCEOFBEING]->(ms), (fm)-[:OF]->(f)",
+      { FaceId : faceId,
+        FaceRectangletop : faceRectangle.top,
+        FaceRectangleleft : faceRectangle.left,
+        FaceRectanglewidth : faceRectangle.width,
+        FaceRectangleheight : faceRectangle.height,
+        Convidence : convidence,
+        Persistantface : persistantface,
+        Filepath :  filepath})
     .then(function(result){
       result.records.forEach(function(record) {
         console.log(record._fields);
