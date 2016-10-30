@@ -312,6 +312,21 @@ router.get('/matchingphotosofperson/:id', function(req,res) {
     console.log('Query Id not defined')
   }
 
+  session
+    .run("MATCH (mp:MissingPerson{Unique_ID : {unique_ID}})-[:MUGSHOTOF]-(:Mugshot)-[CONFIDENCEOFBEING]-(:FaceMatch)-[OF]-(:Face)-[ISIN]-(Photo:Photo) RETURN Photo",{unique_ID, Unique_ID})
+    .then(function(result){
+      result.records.forEach(function(record) {
+        console.log(record._fields);
+      });
+      session.close();
+      res.json({"OMG" : "It worked!"})
+    })
+    .catch(function(error) {
+      res.code = 500;
+      res.json({"oh" : "FFS!"})
+      console.log(error);
+    });
+
   retval = { photos: [{
         photo_url: 'https://storagekeepingupappear.blob.core.windows.net/identity/0348256610fd59c61c5dbf7fa679e036.jpg',
         face: {top: 0, left:0, height:10, width:10},
