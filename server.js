@@ -7,7 +7,6 @@ var Stream = require('stream');
 var request = require("request")
 var neo4j = require('neo4j-driver').v1;
 var driver = neo4j.driver("bolt://52.169.73.89", neo4j.auth.basic("neo4j", "neo4jneo4j"));
-var session = driver.session();
 var moment = require('moment');
 
 var config = null;
@@ -78,6 +77,7 @@ router.post('/identify', function(req, res) {
       console.log('Uploaded file')
 
       var filePath = "identity/" + filename
+      var session = driver.session();
       session
       .run("MERGE (p:Photo {FilePath : {FilePath}, Lat: {Lat}, Long: {Long}, Timestamp: {timestamp} } ) RETURN p ", { FilePath : filePath, Lat: lat, Long: long, timestamp: timeStamp})
       .then(function(result){
@@ -147,6 +147,7 @@ router.post('/addmugshot', function(req, res) {
       console.log('Uploaded file')
 
       var filePath = "missingpersons/" + filename
+      var session = driver.session();
       session
       .run("MERGE (p:Photo {FilePath : {FilePath}} ) RETURN p ", { FilePath : filePath})
       .then(function(result){
@@ -202,6 +203,7 @@ router.put('/relatemugshot', function(req, res) {
   var personId = req.body.personId;
   var persistantface = req.body.persistedFaceId;
 
+  var session = driver.session();
   session
   .run("MERGE (ms:Mugshot {persistantface : {persistantface}} )", { persistantface : persistantface})
   .then(function(result){
@@ -225,6 +227,7 @@ router.put('/relatemugshot', function(req, res) {
 })
 
 router.get('/missingpersons', function(req,res) {
+  var session = driver.session();
   session
   .run("MATCH (n:MissingPerson) RETURN n",{})
   .then(function(result){
@@ -252,6 +255,7 @@ router.get('/missingpersons/:id', function(req,res) {
   }
 
   var Unique_ID = req.params.id
+  var session = driver.session();
 
   session
   .run("MATCH (n:MissingPerson{Unique_ID : {unique_ID}}) RETURN n",{unique_ID: Unique_ID})
@@ -277,6 +281,7 @@ router.get('/mugshotofperson/:id', function(req,res) {
     console.log('Query Id not defined')
   }
   var Unique_ID = req.params.id
+  var session = driver.session();
   session
   .run("MATCH (mp:MissingPerson{Unique_ID : {unique_ID}})-[:MUGSHOTOF]-(:Mugshot)-[PHOTOOF]-(Photo:Photo) RETURN Photo LIMIT 1",{unique_ID: Unique_ID})
   .then(function(result){
@@ -302,6 +307,7 @@ router.get('/matchingphotosofperson/:id', function(req,res) {
   }
 
   var Unique_ID = req.params.id;
+  var session = driver.session();
 
   session
   .run("MATCH (mp:MissingPerson{Unique_ID : {unique_ID}})-[:MUGSHOTOF]-(:Mugshot)-[CONFIDENCEOFBEING]-(:FaceMatch)-[OF]-(face:Face)-[ISIN]-(photo:Photo) RETURN face,photo",{unique_ID: Unique_ID})
@@ -352,8 +358,8 @@ router.get('/matchingphotosofperson/:id', function(req,res) {
     face: {top: 20, left:10, height:20, width:20},
     location: {lat: 53.476802, long: -2.254879},
     source: "Twitter"
-  }] };
-
+  }]
+};
 })
 
 
@@ -387,6 +393,7 @@ if (typeof req.body.faceAttributes !== 'undefined') {
     gender = ""
   }
 }
+var session = driver.session();
 session
 .run("MATCH (ms:Mugshot {persistantface : {Persistantface}} ), (p:Photo {FilePath : {Filepath}} )  create (f:Face {faceId : {FaceId}, faceRectangletop : {FaceRectangletop}, faceRectangleleft : {FaceRectangleleft}, faceRectanglewidth : {FaceRectanglewidth}, faceRectangleheight : {FaceRectangleheight} ,gender : {Gender}, age : {Age} })-[:ISIN]->(p), (fm:FaceMatch {convidence: {Convidence}})-[:CONFIDENCEOFBEING]->(ms), (fm)-[:OF]->(f)",
 { FaceId : faceId,
