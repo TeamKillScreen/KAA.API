@@ -42,8 +42,6 @@ var router = express.Router();              // get an instance of the express Ro
 
 // middleware to use for all requests
 router.use(function(req, res, next) {
-  // do logging
-  console.log('Something is happening.');
   next(); // make sure we go to the next routes and don't stop here
 });
 
@@ -75,9 +73,7 @@ router.post('/identify', function(req, res) {
   var timeStamp = req.body.timestamp || moment().format();;
 
   blobSvc.createBlockBlobFromStream('identity', filename, stream, data.length, function(error, result, response){
-    console.log(result)
     console.log(error)
-    console.log(response)
     if(!error){
       console.log('Uploaded file')
 
@@ -106,12 +102,11 @@ router.post('/identify', function(req, res) {
         json: requestData
       },function (error, response, body) {
         if (!error && response.statusCode === 200) {
-          console.log(body)
           res.json({body})
         }
         else {
 
-          console.log("error: " + error)
+          console.log(error)
           console.log("response.statusCode: " + response.statusCode)
           console.log("response.statusText: " + response.statusText)
         }
@@ -147,9 +142,7 @@ router.post('/addmugshot', function(req, res) {
   var personId = req.body.personId;
 
   blobSvc.createBlockBlobFromStream('missingpersons', filename, stream, data.length, function(error, result, response){
-    console.log(result)
     console.log(error)
-    console.log(response)
     if(!error){
       console.log('Uploaded file')
 
@@ -157,9 +150,6 @@ router.post('/addmugshot', function(req, res) {
       session
       .run("MERGE (p:Photo {FilePath : {FilePath}} ) RETURN p ", { FilePath : filePath})
       .then(function(result){
-        result.records.forEach(function(record) {
-          console.log(record._fields);
-        });
         // Completed!
         session.close();
       })
@@ -181,12 +171,11 @@ router.post('/addmugshot', function(req, res) {
         json: requestData
       },function (error, response, body) {
         if (!error && response.statusCode === 200) {
-          console.log(body)
           res.json({body})
         }
         else {
 
-          console.log("error: " + error)
+          console.log( error)
           res.code = 500;
           res.send(error)
         }
@@ -216,15 +205,9 @@ router.put('/relatemugshot', function(req, res) {
   session
   .run("MERGE (ms:Mugshot {persistantface : {persistantface}} )", { persistantface : persistantface})
   .then(function(result){
-    result.records.forEach(function(record) {
-      console.log(record._fields);
-    });
     session
     .run("MATCH (ms:Mugshot {persistantface : {persistantfacep}} ), (mp:MissingPerson { Unique_ID : {personId} }), (p:Photo {FilePath : {filepath}} )  CREATE (ms)-[:MUGSHOTOF]->(mp), (p)-[:PHOTOOF]->(ms)  RETURN ms", { persistantfacep : persistantface, personId : personId, filepath : filepath})
     .then(function(result){
-      result.records.forEach(function(record) {
-        console.log(record._fields);
-      });
       session.close();
       res.json({"OMG" : "It worked!"})
     })
@@ -326,7 +309,6 @@ router.get('/matchingphotosofperson/:id', function(req,res) {
     var retval = { photos: []}
 
     result.records.forEach(function(record) {
-      console.log(record._fields);
 
       var photo = {
         photo_url: 'https://storagekeepingupappear.blob.core.windows.net/' + record._fields[1].properties.FilePath,
@@ -392,7 +374,6 @@ var filepath = req.body.filePath;
 var convidence = req.body.confidence;
 var faceId = req.body.faceId;
 var faceRectangle = req.body.faceRectangle;
-console.log(req.body)
 var age = 1
 var gender = ''
 if (typeof req.body.faceAttributes !== 'undefined') {
@@ -419,9 +400,6 @@ session
   Gender: gender,
   Age: age})
   .then(function(result){
-    result.records.forEach(function(record) {
-      console.log(record._fields);
-    });
     session.close();
     clockwork.sendSms({ To: config.ClockworkToNumber, Content: 'Face Linked!'},
     function(error, resp) {
