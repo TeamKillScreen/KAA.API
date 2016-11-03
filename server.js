@@ -333,7 +333,7 @@ router.get('/matchingphotosofperson/:id', function(req,res) {
         age: record._fields[0].properties.age,
         gender: record._fields[0].properties.gender,
       }
-
+      console.log(photo);
       retval.photos.push(photo);
     });
     session.close();
